@@ -1,12 +1,14 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Room struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name" validate:"required"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        int
+	Name      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Rooms []Room
