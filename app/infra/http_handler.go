@@ -1,18 +1,24 @@
 package infra
 
 import (
+	"log"
 	"net/http"
+
+	"github.com/ryoutaku/simple-chat/app/interface/adapter"
 )
 
-type Handler struct {
-	Func func(interface{})
-}
+type httpHandler func(adapter.HttpContext) *adapter.HttpError
 
-func NewHandler(f func(interface{})) Handler {
-	return Handler{Func: f}
-}
+func (fn httpHandler) run(w http.ResponseWriter, r *http.Request) {
+	context := NewHttpContext(w, r)
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+	}()
 
-func (h Handler) SetContext(w http.ResponseWriter, r *http.Request) {
-	c := HttpContext{Writer: w, Request: r}
-	h.Func(c)
+	if err := fn(context); err != nil {
+		http.Error(w, err.Error(), err.Code)
+	}
 }
