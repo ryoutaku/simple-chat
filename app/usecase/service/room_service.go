@@ -1,4 +1,4 @@
-package interactor
+package service
 
 import (
 	"github.com/ryoutaku/simple-chat/app/domain"
@@ -6,16 +6,16 @@ import (
 	"github.com/ryoutaku/simple-chat/app/usecase/input"
 )
 
-type roomInteractor struct {
+type RoomService struct {
 	Repository dao.RoomRepository
 }
 
-func NewRoomInteractor(repo dao.RoomRepository) input.RoomInteractor {
-	return &roomInteractor{Repository: repo}
+func NewRoomService(repo dao.RoomRepository) *RoomService {
+	return &RoomService{Repository: repo}
 }
 
-func (i *roomInteractor) All() (outData input.RoomsOutputData, err error) {
-	rooms, err := i.Repository.All()
+func (s *RoomService) All() (outData input.RoomsOutputData, err error) {
+	rooms, err := s.Repository.All()
 	if err != nil {
 		return
 	}
@@ -24,9 +24,9 @@ func (i *roomInteractor) All() (outData input.RoomsOutputData, err error) {
 	return
 }
 
-func (i *roomInteractor) Create(inData input.RoomInputData) (outData input.RoomOutputData, err error) {
+func (s *RoomService) Create(inData input.RoomInputData) (outData input.RoomOutputData, err error) {
 	room := convertToRoomDomain(&inData)
-	err = i.Repository.Create(&room)
+	err = s.Repository.Create(&room)
 	if err != nil {
 		return
 	}

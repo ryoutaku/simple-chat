@@ -1,4 +1,4 @@
-package interactor
+package service
 
 import (
 	"errors"
@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ryoutaku/simple-chat/app/domain"
 	"github.com/ryoutaku/simple-chat/app/usecase/dao"
+
+	"github.com/ryoutaku/simple-chat/app/domain"
 	"github.com/ryoutaku/simple-chat/app/usecase/input"
 )
 
@@ -75,21 +76,25 @@ func TestAll(t *testing.T) {
 		},
 	}
 
-	for _, test := range testCases {
-		fakeRepository := fakeRoomRepository{
-			fakeAll: func() (rooms domain.Rooms, err error) {
-				return test.repositoryReturn, test.repositoryErr
-			},
-		}
-		interactor := NewRoomInteractor(fakeRepository)
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			fakeRepository := fakeRoomRepository{
+				fakeAll: func() (rooms domain.Rooms, err error) {
+					return tc.repositoryReturn, tc.repositoryErr
+				},
+			}
+			service := NewRoomService(fakeRepository)
 
-		outputData, err := interactor.All()
-		if !reflect.DeepEqual(test.expectedError, err) {
-			t.Errorf("%v: interactor.All error expected = %v, got = %v", test.name, test.expectedError, err)
-		}
-		if err == nil && !reflect.DeepEqual(test.expectedReturn, outputData) {
-			t.Errorf("%v: interactor.All return expected = %v, got = %v", test.name, test.expectedReturn, outputData)
-		}
+			outputData, err := service.All()
+			if !reflect.DeepEqual(tc.expectedError, err) {
+				t.Errorf("service.All error expected = %v, got = %v", tc.expectedError, err)
+			}
+			if err == nil && !reflect.DeepEqual(tc.expectedReturn, outputData) {
+				t.Errorf("service.All return expected = %v, got = %v", tc.expectedReturn, outputData)
+			}
+		})
 	}
 }
 
@@ -114,25 +119,29 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	for _, test := range testCases {
-		fakeRepository := fakeRoomRepository{
-			fakeCreate: func(room *domain.Room) (err error) {
-				if test.repositoryErr == nil {
-					room.ID = 1
-					room.CreatedAt = time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
-					room.UpdatedAt = time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
-				}
-				return test.repositoryErr
-			},
-		}
-		interactor := NewRoomInteractor(fakeRepository)
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			fakeRepository := fakeRoomRepository{
+				fakeCreate: func(room *domain.Room) (err error) {
+					if tc.repositoryErr == nil {
+						room.ID = 1
+						room.CreatedAt = time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
+						room.UpdatedAt = time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local)
+					}
+					return tc.repositoryErr
+				},
+			}
+			service := NewRoomService(fakeRepository)
 
-		outData, err := interactor.Create(roomInputData)
-		if !reflect.DeepEqual(test.expectedError, err) {
-			t.Errorf("%v: interactor.Create error expected = %v, got = %v", test.name, test.expectedError, err)
-		}
-		if err == nil && !reflect.DeepEqual(test.expectedReturn, outData) {
-			t.Errorf("%v: interactor.Create return expected = %v, got = %v", test.name, test.expectedReturn, outData)
-		}
+			outData, err := service.Create(roomInputData)
+			if !reflect.DeepEqual(tc.expectedError, err) {
+				t.Errorf("service.Create error expected = %v, got = %v", tc.expectedError, err)
+			}
+			if err == nil && !reflect.DeepEqual(tc.expectedReturn, outData) {
+				t.Errorf("service.Create return expected = %v, got = %v", tc.expectedReturn, outData)
+			}
+		})
 	}
 }
