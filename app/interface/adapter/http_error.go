@@ -1,4 +1,4 @@
-package controller
+package adapter
 
 type HttpError struct {
 	Message string
