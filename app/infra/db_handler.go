@@ -5,15 +5,17 @@ import (
 	"log"
 	"os"
 
-	"github.com/ryoutaku/simple-chat/app/infra/adapter"
-
 	_ "time/tzdata"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func NewDatabase() *adapter.Database {
+type DBHandler struct {
+	DB *gorm.DB
+}
+
+func NewDBHandler() *DBHandler {
 	user := os.Getenv("MYSQL_USER")
 	password := os.Getenv("MYSQL_PASSWORD")
 	host := os.Getenv("MYSQL_HOST")
@@ -28,5 +30,22 @@ func NewDatabase() *adapter.Database {
 	if err != nil {
 		log.Panic(err)
 	}
-	return &adapter.Database{DB: db}
+	return &DBHandler{DB: db}
+}
+
+func (h *DBHandler) Find(dest interface{}, conds ...interface{}) (err error) {
+	result := new(gorm.DB)
+	if len(conds) == 0 {
+		result = h.DB.Find(dest)
+	} else {
+		result = h.DB.Find(dest, conds)
+	}
+	err = result.Error
+	return
+}
+
+func (h *DBHandler) Create(value interface{}) (err error) {
+	result := h.DB.Create(value)
+	err = result.Error
+	return
 }
