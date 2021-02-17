@@ -1,4 +1,4 @@
-package controller
+package adapter
 
 type HttpContext interface {
 	Bind(i interface{}) error
