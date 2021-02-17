@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: app
+    env_file:
+      - .env
+    container_name: simple_chat_app
+    volumes:
+      - .:/simple_chat_app:cached
+    tty: true
+    stdin_open: true
+    ports:
+      - 5050:5050
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:5.7
+    container_name: simple_chat_mysql
+    restart: always
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+      - 13306:3306
+  woker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: simple_chat_woker
+    tty: true
+    stdin_open: true
+
+volumes:
+  mysql_data:
+    driver: local
