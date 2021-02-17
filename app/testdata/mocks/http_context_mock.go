@@ -1,7 +1,11 @@
-package adapter
+package mocks
+
+import (
+	"github.com/ryoutaku/simple-chat/app/interface/adapter"
+)
 
 type FakeHttpContext struct {
-	HttpContext
+	adapter.HttpContext
 	FakeBind func(i interface{}) error
 	FakeJSON func(code int, i interface{}) error
 }
