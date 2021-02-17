@@ -1,4 +1,4 @@
-package boundary
+package input
 
 import (
 	"time"
