@@ -3,13 +3,11 @@ name: Run Test
 on: push
 
 jobs:
-  build:
+  test:
     name: Run Test
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -24,9 +22,7 @@ jobs:
         run: go test -v ./... -coverprofile=coverage.txt -covermode=atomic
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v1.0.2
+        uses: codecov/codecov-action@v1
         with:
           token: {{ secrets.CODECOV_TOKEN }}
-          file: ./app/coverage.txt
-          flags: unittests
-          name: codecov-umbrella
+          directory: ./app
