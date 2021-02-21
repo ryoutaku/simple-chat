@@ -17,10 +17,6 @@ var dummyRoom = domain.Room{
 	Name: "テストルーム1",
 }
 
-var validateErrRoom = domain.Room{
-	ID: 1,
-}
-
 var expectedRoom = domain.Room{
 	ID:        1,
 	Name:      "テストルーム1",

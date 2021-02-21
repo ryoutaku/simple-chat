@@ -1,3 +1,6 @@
+[![Run Test](https://github.com/ryoutaku/simple-chat/actions/workflows/test.yml/badge.svg)](https://github.com/ryoutaku/simple-chat/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/ryoutaku/simple-chat/branch/main/graph/badge.svg?token=NPN5TAC98Q)](https://codecov.io/gh/ryoutaku/simple-chat)
+
 # Go + CleanArchitectureでのREST API設計
 
 ## 概要
@@ -9,7 +12,7 @@ CleanArchitectureに基づいて設計されたGoによるREST API
 で提唱されたソフトウェアアーキテクチャの実装例です。 \
 以下の図のようにソースコードをいくつかの領域に分割し、依存性が内側（上位レベルの方針）にだけ向くように設計します。
 
-![依存関係](doc/クリーンアーキテクチャ.png)
+![依存関係](doc/images/クリーンアーキテクチャ.png)
 > Clean Architecture 達人に学ぶソフトウェアの構造と設計（p.200）より抜粋
 
 このアーキテクチャは以下の特性を有しています。
@@ -19,13 +22,13 @@ CleanArchitectureに基づいて設計されたGoによるREST API
 > ・UI非依存：UIは，システムのほかの部分を変更することなく，簡単に変更できる．たとえば，ビジネスルールを変更することなく，ウェブUIはコンソールUIに置き換えることができる。 \
 > ・データベース非依存：OracleやSQL ServerをMongo，BigTable，CouchDBなどに置き換えることができる．ビジネスルールはデータベースに束縛されていない。 \
 > ・外部エージェント非依存：ビジネスルールは外界のインターフェースについて何も知らない。
-> 
+>
 > Clean Architecture 達人に学ぶソフトウェアの構造と設計（p.200）より抜粋
 
 以下の図は、データベースを使ったウェブベースのJavaシステムをクリーンアーキテクチャで実装した典型的な例として紹介されていたものです。\
 今回は、この図を参考に実装を行っています。
 
-![典型的なシナリオ](doc/典型的なシナリオ.jpeg)
+![典型的なシナリオ](doc/images/典型的なシナリオ.jpeg)
 > Clean Architecture 達人に学ぶソフトウェアの構造と設計（p.204）より抜粋
 
 ## 詳細
@@ -65,13 +68,13 @@ CleanArchitectureに基づいて設計されたGoによるREST API
 ※アーキテクチャの構成を明確に示すためにAPI自体はシンプルな機能のみにしています。
 
 ### 開発環境
-- API
+- アプリケーション
   - Go v1.15.3
     - gorilla/mux v1.8.0（ルーティング）
     - gorm.io/driver/mysql v1.0.3（MySQLドライバ）
-    - gorm.io/gorm v1.20.11（ORM） 
+    - gorm.io/gorm v1.20.11（ORM）
     - DATA-DOG/go-sqlmock v1.5.0（データベースのモック生成）
-- ミドルウェア
+- データベース
   - MySQL v5.7（マイグレーション：sql-migrate）
 - コンテナ
   - Docker
@@ -117,7 +120,7 @@ app
 
 ### コードの依存関係を表した図
 
-![依存関係](doc/依存関係.png)
+![依存関係](doc/images/依存関係.png)
 
 実際に実装したコードの依存関係を簡易的に表した図です。 \
 右側が円の内側に相当し、各レイヤーの境界を越える際は、依存性の向きが内側に向くようになっています。\
@@ -131,6 +134,7 @@ app
 - `Repository`のインターフェイス（定義場所：`dao`パッケージ）→ 一つのServiceから複数のRepositoryを呼び出すケースも想定されるため
 
 インターフェイスの命名については、実装と一対一の関係（同じ役割）なので、実装と同じ名前にしています。
+[Effective Go #interface-names](https://golang.org/doc/effective_go#interface-names)
 
 DIコンテナ（依存性の注入）については、Wireやdigなどのツールを試しましたが、現状の構成では学習コストや外部ツール依存のリスクを上回るメリットを感じられなかったので自作しています。
 
@@ -156,9 +160,9 @@ DIコンテナ（依存性の注入）については、Wireやdigなどのツ�
 WEBフレームワークのメソッド呼び出しに関しては、`HttpContext`のインターフェイスを介すことで、メソッド呼び出しの修正箇所も集約しています。 \
 `HttpContext`は、ルーティング時にフレームワークから引数で渡される`http.ResponseWriter`や`*http.Request`などをラップして、controllerから隠蔽します。
 
-![HttpHandlerの拡大図](doc/HttpHandlerの拡大図.png)
+![HttpHandlerの拡大図](doc/images/HttpHandlerの拡大図.png)
 
-本実装では`net/http`を利用しています。
+本実装では`net/http`とルーティングに`gorilla/mux`を利用しています。
 
 ```go
 // app/infra/router.go
@@ -236,7 +240,7 @@ func (c *httpContext) JSON(code int, i interface{}) (err error) {
 
 ORMについても、interface層から利用する際は`DBHandler`を経由することで、依存関係の逆転と修正箇所を集約しています。
 
-![DBHandlerの拡大図](doc/DBHandlerの拡大図.png)
+![DBHandlerの拡大図](doc/images/DBHandlerの拡大図.png)
 
 これら実装のメリットは、interface層以下がフレームワークについて何も知らなくて良い様にすることで、infra層に修正箇所を集約できることです。
 
@@ -253,7 +257,7 @@ ORMについても、interface層から利用する際は`DBHandler`を経由す
 インターフェイスを用いることでgomockなどの外部ツールに頼らなくても、実装をモックに置き換えることができます。\
 controllerの単体テストを例に説明します。
 
-![Controller拡大図](doc/Controller拡大図.png)
+![Controller拡大図](doc/images/Controller拡大図.png)
 
 テスト対象のメソッドは、Roomを全件取得するためのハンドラ関数`Index`です。 \
 今回は、内部で呼び出している`Service.All()`をモックに置き換えます。
@@ -279,7 +283,6 @@ func (c *RoomController) Index(hc adapter.HttpContext) *adapter.HttpError {
 ```
 
 controllerでは、`input`パッケージ内で定義されている`Service`のインターフェイスを利用しています。
-
 ```go
 // app/usecase/input/room_input.go
 package input
@@ -413,9 +416,9 @@ func TestRoomControllerIndex(t *testing.T) {
 
 - どのレイヤーにレスポンスのフォーマットとなるデータ構造体が定義されているか判断しづらい
 - レスポンスのフォーマットを変更するのに、Entity層の修正が必要になる \
-    （Entity層がレスポンスの形式を知っている）
+  （Entity層がレスポンスの形式を知っている）
 - Entityのデータをそのまま返すので、意図せぬ情報漏えいが発生するリスクがある \
-    （例えば、User構造体に外部に漏れてはいけないユーザーのIPアドレスが含まれており、その構造体でレスポンスを生成したことでIPアドレスが漏えいした等）
+  （例えば、User構造体に外部に漏れてはいけないユーザーのIPアドレスが含まれており、その構造体でレスポンスを生成したことでIPアドレスが漏えいした等）
 
 その為、各レイヤーにはそれぞれの関心のある項目だけで定義した構造体を利用しています。
 
@@ -446,10 +449,10 @@ DDDもそうですがGoの言語仕様やお作法も含めて、まだまだ全
 ただ設計を見直す度に新しい気づきがあるので、今後もより良い設計を検討して行きたいです。
 
 ## 参考情報
-- [【書籍】Clean Architecture 達人に学ぶソフトウェアの構造と設計](https://tatsu-zine.com/books/clean-architecture) 
-- [世界一わかりやすいClean Architecture](https://www.nuits.jp/entry/easiest-clean-architecture-2019-09) 
-- [実践クリーンアーキテクチャ](https://nrslib.com/clean-architecture/#outline__7) 
-- [Goのサーバサイド実装におけるレイヤ設計とレイヤ内実装について考える](https://www.slideshare.net/pospome/go-80591000) 
+- [【書籍】Clean Architecture 達人に学ぶソフトウェアの構造と設計](https://tatsu-zine.com/books/clean-architecture)
+- [世界一わかりやすいClean Architecture](https://www.nuits.jp/entry/easiest-clean-architecture-2019-09)
+- [実践クリーンアーキテクチャ](https://nrslib.com/clean-architecture/#outline__7)
+- [Goのサーバサイド実装におけるレイヤ設計とレイヤ内実装について考える](https://www.slideshare.net/pospome/go-80591000)
 - [マイクロサービスにクリーンアーキテクチャを採用する上で考えたこと](https://engineering.mercari.com/blog/entry/2019-12-19-100000/)
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments#interfaces)
 
