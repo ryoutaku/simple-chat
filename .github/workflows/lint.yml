@@ -15,7 +15,6 @@ jobs:
 
       - name: Lint Code Base
         working-directory: ./app
-        uses: github/super-linter@v3
         env:
           VALIDATE_ALL_CODEBASE: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
