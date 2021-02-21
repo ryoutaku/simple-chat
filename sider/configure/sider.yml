@@ -1,0 +1,3 @@
+ linter:
+  golangci_lint:
+    target: ./app
