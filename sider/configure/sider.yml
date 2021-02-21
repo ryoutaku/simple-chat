@@ -1,5 +1,0 @@
- linter:
-  golangci_lint:
-    target:
-      - "app/..."
-    no-config: true
