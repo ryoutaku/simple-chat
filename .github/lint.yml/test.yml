@@ -1,4 +1,4 @@
-name: Run Super-Linter and Test
+name: Run Super-Linter and Build and Test
 
 on: push
 
@@ -13,9 +13,13 @@ jobs:
         with:
           go-version: 1.15
 
-      - name: Super-Linter
+      - name: Lint Code Base
         working-directory: app
         uses: github/super-linter@v3
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         working-directory: app
