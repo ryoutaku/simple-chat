@@ -13,7 +13,10 @@ jobs:
         with:
           go-version: 1.15
 
+      - name: Build
+        working-directory: ./app
+        run: go build -v ./...
+
       - name: Test
         working-directory: ./app
         run: go test -v ./...
-
