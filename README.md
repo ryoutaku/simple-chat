@@ -1,3 +1,4 @@
+[![Run Test](https://github.com/ryoutaku/simple-chat/actions/workflows/test.yml/badge.svg)](https://github.com/ryoutaku/simple-chat/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/ryoutaku/simple-chat/branch/main/graph/badge.svg?token=NPN5TAC98Q)](https://codecov.io/gh/ryoutaku/simple-chat)
 
 # Go + CleanArchitectureでのREST API設計
