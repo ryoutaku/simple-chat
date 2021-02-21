@@ -1,4 +1,4 @@
-[![GitHub Super-Linter](https://github.com/ryoutaku/simple-chat/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![codecov](https://codecov.io/gh/takuoki/clmconv/branch/master/graph/badge.svg)](https://codecov.io/gh/takuoki/clmconv)
 
 # Go + CleanArchitectureでのREST API設計
 
