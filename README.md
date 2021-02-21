@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/takuoki/clmconv/branch/master/graph/badge.svg)](https://codecov.io/gh/takuoki/clmconv)
+[![codecov](https://codecov.io/gh/ryoutaku/simple-chat/branch/main/graph/badge.svg?token=NPN5TAC98Q)](https://codecov.io/gh/ryoutaku/simple-chat)
 
 # Go + CleanArchitectureでのREST API設計
 
