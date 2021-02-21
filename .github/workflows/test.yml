@@ -1,0 +1,23 @@
+name: Run Test
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Build
+        working-directory: ./app
+        run: go build -v ./...
+
+      - name: Test
+        working-directory: ./app
+        run: go test -v ./...
+
