@@ -1,3 +1,5 @@
 .DS_Store
 *.exe
 .env
+/app/coverage.out
+/app/app
